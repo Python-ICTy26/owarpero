@@ -26,7 +26,8 @@ def display(grid: tp.List[tp.List[str]]) -> None:
     for row in range(9):
         print(
             "".join(
-                grid[row][col].center(width) + ("|" if str(col) in "25" else "") for col in range(9)
+                grid[row][col].center(width) + ("|" if str(col) in "25" else "")
+                for col in range(9)
             )
         )
         if str(row) in "25":
@@ -87,7 +88,9 @@ def get_block(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.List[s
     """
     newpos = (pos[0] - pos[0] % 3, pos[1] - pos[1] % 3)
     return [
-        grid[i][j] for i in range(newpos[0], newpos[0] + 3) for j in range(newpos[1], newpos[1] + 3)
+        grid[i][j]
+        for i in range(newpos[0], newpos[0] + 3)
+        for j in range(newpos[1], newpos[1] + 3)
     ]
 
 
@@ -108,7 +111,9 @@ def find_empty_positions(grid: tp.List[tp.List[str]]) -> tp.Tuple[int, int]:
     return -1, -1
 
 
-def find_possible_values(grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]) -> tp.Set[str]:
+def find_possible_values(
+    grid: tp.List[tp.List[str]], pos: tp.Tuple[int, int]
+) -> tp.Set[str]:
     """Вернуть множество возможных значения для указанной позиции
     >>> grid = read_sudoku("puzzle1.txt")
     >>> values = find_possible_values(grid, (0,2))
@@ -243,4 +248,3 @@ if __name__ == "__main__":
             print(f"Puzzle {fname} can't be solved")
         else:
             display(solution)
-            
