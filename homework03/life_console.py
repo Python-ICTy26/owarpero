@@ -1,5 +1,5 @@
 import curses
-import time
+from dataclasses import replace
 
 from life import GameOfLife
 from ui import UI
@@ -8,29 +8,32 @@ from ui import UI
 class Console(UI):
     def __init__(self, life: GameOfLife) -> None:
         super().__init__(life)
+        self.game = life
 
     def draw_borders(self, screen) -> None:
         screen.border("|", "|", "-", "-", "+", "+", "+", "+")
 
     def draw_grid(self, screen) -> None:
-        for i in range(self.life.rows):
-            for j in range(self.life.cols):
-                if self.life.curr_generation[i][j]:
-                    screen.addstr(1 + i, 1 + j, "*")
-                else:
-                    screen.addstr(1 + i, 1 + j, " ")
+        for i in range(0, len(self.game.curr_generation)):
+            screen.addstr(
+                i + 1,
+                1,
+                "".join(map(str, self.game.curr_generation[i])).replace("0", " ").replace("1", "*"),
+            )
+        screen.refresh()
+        screen.getch()
+        self.game.step()
 
     def run(self) -> None:
         screen = curses.initscr()
-        curses.noecho()
         self.draw_borders(screen)
-        self.draw_grid(screen)
-        screen.refresh()
-
-        while not self.life.is_max_generations_exceeded and self.life.is_changing:
-            self.life.step()
+        self.game.create_grid(randomize=True)
+        # for _ in range(self.game.max_generations):
+        while True:
             self.draw_grid(screen)
-            screen.refresh()
-            time.sleep(0.2)
+        # curses.endwin()
 
-        curses.endwin()
+
+life = GameOfLife((80, 30), max_generations=1000)
+ui = Console(life)
+ui.run()
