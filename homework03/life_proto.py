@@ -1,10 +1,9 @@
 import random
 import typing as tp
-from venv import create
-from xml.etree.ElementPath import xpath_tokenizer_re
+from functools import reduce
+from pprint import pprint
 
 import pygame
-from pygame.locals import *
 
 Cell = tp.Tuple[int, int]
 Cells = tp.List[int]
@@ -46,18 +45,17 @@ class GameOfLife:
         self.screen.fill(pygame.Color("white"))
 
         # Создание списка клеток
-        # PUT YOUR CODE HERE
         self.grid = self.create_grid(randomize=True)
 
         running = True
         while running:
-            # for event in pygame.event.get():
-            #     if event.type == QUIT:
-            #         running = False
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            self.draw_lines()
 
             # Отрисовка списка клеток
             # Выполнение одного шага игры (обновление состояния ячеек)
-            # PUT YOUR CODE HERE
             self.draw_grid()
             self.draw_lines()
             self.grid = self.get_next_generation()
@@ -85,22 +83,22 @@ class GameOfLife:
             Матрица клеток размером `cell_height` х `cell_width`.
         """
         return [
-            [random.randint(0, 1) if randomize else 0 for _ in range(self.cell_height)]
-            for _ in range(self.cell_width)
+            [random.randint(0, 1) if randomize else 0 for j in range(self.cell_width)]
+            for _ in range(self.cell_height)
         ]
 
     def draw_grid(self) -> None:
         """
         Отрисовка списка клеток с закрашиванием их в соответствующе цвета.
         """
-        for i in range(self.cell_width):
-            for j in range(self.cell_height):
+        for i in range(self.cell_height):
+            for j in range(self.cell_width):
                 pygame.draw.rect(
                     self.screen,
                     pygame.Color("green") if self.grid[i][j] else pygame.Color("white"),
                     (
-                        i * self.cell_size,
                         j * self.cell_size,
+                        i * self.cell_size,
                         self.cell_size,
                         self.cell_size,
                     ),
@@ -124,23 +122,15 @@ class GameOfLife:
         out : Cells
             Список соседних клеток.
         """
-        m = []
-        for i, j in (
-            (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
-        ):
-            if cell[0] + i >= 0 and cell[1] + j >= 0:
-                try:
-                    m.append(self.grid[cell[0] + i][cell[1] + j])
-                except IndexError:
-                    pass
-        return m
+        return [
+            self.grid[cell[0] + i][cell[1] + j]
+            for i, j in self.get_neighbours_permutation()
+            if 0 <= cell[0] + i < self.cell_height and 0 <= cell[1] + j < self.cell_width
+        ]
+
+    @staticmethod
+    def get_neighbours_permutation():
+        return [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
     def get_next_generation(self) -> Grid:
         """
@@ -151,15 +141,25 @@ class GameOfLife:
         out : Grid
             Новое поколение клеток.
         """
-        grid = [[0] * len(self.grid[0]) for _ in range(len(self.grid))]
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[0])):
-                n = self.get_neighbours((i, j)).count(1)
-                if self.grid[i][j] and n == 2 or n == 3:
-                    grid[i][j] = 1
-        return grid
+        new_grid = []
+        for i in range(self.cell_height):
+            tmp = []
+            for j in range(self.cell_width):
+                neighbours = self.get_neighbours((i, j))
+                if self.grid[i][j]:
+                    if sum(neighbours) < 2 or sum(neighbours) > 3:
+                        tmp.append(0)
+                    else:
+                        tmp.append(1)
+                else:
+                    if sum(neighbours) == 3:
+                        tmp.append(1)
+                    else:
+                        tmp.append(0)
+            new_grid.append(tmp)
+        return new_grid
 
 
 if __name__ == "__main__":
-    game = GameOfLife(320 * 3, 240 * 3, 10, 100)
+    game = GameOfLife(cell_size=40)
     game.run()

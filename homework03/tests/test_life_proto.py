@@ -108,6 +108,7 @@ class TestGameOfLife(unittest.TestCase):
         num_updates = 0
         for step in sorted(steps.keys(), key=int):
             with self.subTest(step=step):
+                print(step)
                 for _ in range(int(step) - num_updates):
                     game.grid = game.get_next_generation()
                     num_updates += 1
