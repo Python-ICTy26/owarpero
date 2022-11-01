@@ -30,77 +30,45 @@ class GameOfLife:
 
     def create_grid(self, randomize: bool = False) -> Grid:
         # Copy from previous assignment
-        return [
-            [random.randint(0, 1) if randomize else 0 for _ in range(self.rows)]
-            for _ in range(self.cols)
-        ]
+        pass
 
     def get_neighbours(self, cell: Cell) -> Cells:
         # Copy from previous assignment
-        m = []
-        for i, j in (
-            (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
-        ):
-            if cell[0] + i >= 0 and cell[1] + j >= 0:
-                try:
-                    m.append(self.curr_generation[cell[0] + i][cell[1] + j])
-                except IndexError:
-                    pass
-        return m
+        pass
 
     def get_next_generation(self) -> Grid:
         # Copy from previous assignment
-        grid = [[0] * len(self.curr_generation[0]) for _ in range(len(self.curr_generation))]
-        for i in range(len(self.curr_generation)):
-            for j in range(len(self.curr_generation[0])):
-                n = self.get_neighbours((i, j)).count(1)
-                if self.curr_generation[i][j] and n == 2 or n == 3:
-                    grid[i][j] = 1
-        return grid
+        pass
 
     def step(self) -> None:
         """
         Выполнить один шаг игры.
         """
-        self.prev_generation = self.curr_generation
-        self.curr_generation = self.get_next_generation()
-        self.generations += 1
+        pass
 
     @property
     def is_max_generations_exceeded(self) -> bool:
         """
         Не превысило ли текущее число поколений максимально допустимое.
         """
-        if self.max_generations is None:
-            return False
-        return int(self.generations) <= self.max_generations
+        pass
 
     @property
     def is_changing(self) -> bool:
         """
         Изменилось ли состояние клеток с предыдущего шага.
         """
-        return self.prev_generation != self.curr_generation
+        pass
 
     @staticmethod
-    def from_file(filename: pathlib.Path):
+    def from_file(filename: pathlib.Path) -> "GameOfLife":
         """
         Прочитать состояние клеток из указанного файла.
         """
-        with open(filename) as f:
-            return [[int(j) for j in i] for i in f]
+        pass
 
     def save(self, filename: pathlib.Path) -> None:
         """
         Сохранить текущее состояние клеток в указанный файл.
         """
-        with open(filename, "w") as f:
-            for i in self.curr_generation:
-                print(i, sep="", file=f)
+        pass
